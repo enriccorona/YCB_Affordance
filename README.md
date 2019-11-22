@@ -18,7 +18,9 @@ Prerequisites are only needed for visualization. You can download the dataset ..
 
 ## Download data
 
-- **YCB object set CAD models**:
+- **YCB object set CAD models**: Models from the YCB object set can be downloaded from [here](https://drive.google.com/open?id=1FdAWKpZTJBYctLNOZmlXGP7FGhE4etf0)
+
+- **YCB-Affordance grasps**: Available from [here](https://drive.google.com/open?id=1dhnjeZxdqLqIWSkUS4bfTtdDU7omDyNO)
 
 - OPTIONAL. **YCB-Video Dataset**: This provides the +133k multi-object scene images that combine with +28M grasps. If you are only interested in the grasps for the YCB object set CAD models, you don't need these. The YCB-Video Dataset can be downloaded from [here](https://drive.google.com/file/d/1if4VoEXNx9W3XCn0Y7Fp15B4GpcYbyYi/view?usp=sharing)
 
