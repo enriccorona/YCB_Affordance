@@ -1,12 +1,6 @@
-# TODO:
-- afegir carpeta o algo amb el codi per fer els plots mes xulos
-- afegir imatges aqui amb els plots xulos tipo el teaser
-- afegir imatges de la demo despres de les linies de codi
-
-
 # YCB-Affordance Dataset
 
-<img src='http://www.iri.upc.edu/people/ecorona/ganhand/ycb_affordance_dataset.png' align="right" width=90>
+<img src='http://www.iri.upc.edu/people/ecorona/ganhand/ycb_affordance_dataset.png' align="right">
 
 We release a large-scale dataset of manually annotated grasps on the 58 objects of the YCB Benchmark Set. This contain grasps such as those in the following image, which are not found by Graspit Simulator or any other automatic pipeline. For each grasp, we annotate tha hand position, the hand pose and the grasp type according to the grasp taxonomy of Feix et al. We transfer these grasps to the 92 Video sequences from the YCB-Video dataset, and remove those grasps that are not feasible, due to interpenetrations with other objects or with the table. The dataset contains 133.936 frames, with more than 28M of realistic grasps.
 
