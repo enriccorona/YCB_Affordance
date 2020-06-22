@@ -5,6 +5,8 @@ import matplotlib.patches as patches
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 
+plt.ion()
+
 # LOADING FUNCTIONS:
 
 def fast_load_obj(file_obj, **kwargs):

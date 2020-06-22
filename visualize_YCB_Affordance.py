@@ -16,20 +16,18 @@ from manopth import rodrigues_layer
 from manopth.manolayer import ManoLayer
 from manopth.tensutils import th_posemap_axisang, make_list, th_pack, subtract_flat_id, th_with_zeros
 
-import trimesh
-import pyquaternion
-
 from matplotlib import pyplot as plt
 
 import tqdm
 
 from utils import fast_load_obj, plot_scene_w_grasps
 from scipy.stats import pearsonr
+import scipy.io
 
 def Visualize():
     # Initialize MANO layer
     MANO = ManoLayer(
-            mano_root='/home/ecorona/hand_grasppoint_gan/manopth/mano/models/', side='right', use_pca=True, ncomps=45, flat_hand_mean=True)
+            mano_root='data/mano/', side='right', use_pca=True, ncomps=45, flat_hand_mean=True)
 
 
     # set model to eval
@@ -42,7 +40,7 @@ def Visualize():
 
     ## YCB INFO:
     #imgnames = np.load('data/imgnames.npy')
-    imgnames = glob.glob('data/YCB_Video_Dataset/????/*color.png')
+    imgnames = glob.glob('data/YCB_Video_Dataset/data/????/*color.png')
     imgnames.sort()
     models = glob.glob('data/models/*')
     models.sort()
@@ -51,22 +49,27 @@ def Visualize():
     # Which objs from the YCB object set that are in YCB-Videos
     objects_in_YCB = np.load('data/objects_in_YCB.npy')
 
-    from IPython import embed
-    embed()
-
+    # offsets in the ycb video dataset
+    offset_ycbs = np.load('data/offsets.npy') #translation_between_YCBObjects_and_YCBVideos.npy')
     # Load object shape for the 21 objs that are in YCB-Video
+
     obj_verts = []
     obj_faces = []
-    for i in objects_in_YCB:
+    for index, i in enumerate(objects_in_YCB):
         obj = fast_load_obj(open(models[i]+'/google_16k/textured.obj', 'rb'))[0]
-        obj_verts.append(obj['vertices'])
+        obj_verts.append(obj['vertices'] - offset_ycbs[index])
         obj_faces.append(obj['faces'])
 
-    # TODO: RANDOMIZE IMAGE VISUALIZATION? OTHERWISE IT VISUALIZES SCENES FROM CONSECUTIVE FRAMES
     # Render 3D scenes with input image
-    for i, imgname in enumerate(imgnames):
+    random_indexs = np.arange(len(imgnames))
+    np.random.shuffle(random_indexs)
+
+    for ind in range(len(random_indexs)):
+        i = random_indexs[ind]
+        imgname = imgnames[i]
         plane = planes[i]
-        meta = scipy.io.loadmat(str.split(imgname, 'color.png\n')[0] + 'meta.mat')
+
+        meta = scipy.io.loadmat(str.split(imgname, 'color.png')[0] + 'meta.mat')
 
         object_ids = meta['cls_indexes'][:, 0] - 1
         numobjects = len(object_ids)
@@ -76,8 +79,8 @@ def Visualize():
         scene_obj_verts = []
         scene_obj_faces = []
 
-        hand_translations = np.load('allpossiblegrasps/mano_translation_%d.npy'%(i), allow_pickle=True)
-        hand_representation = np.load('allpossiblegrasps/mano_representation_%d.npy'%(i), allow_pickle=True)
+        hand_translations = np.load('data/YCB_Affordance_grasps/mano_translation_%d.npy'%(i), allow_pickle=True)
+        hand_representation = np.load('data/YCB_Affordance_grasps/mano_representation_%d.npy'%(i), allow_pickle=True)
         for j in range(numobjects):
             rt = meta['poses'][:, :, j]
 
@@ -91,14 +94,16 @@ def Visualize():
                 continue
 
             # Only plot the first annotated grasp solution for objects:
-            trans = hand_translations[j][0]
-            rep = hand_translations[j][0]
-            verts = MANO(torch.FloatTensor(rep), th_trans=torch.FloatTensor(trans))[0][0].cpu().data.numpy()/1000
+            trans = torch.FloatTensor(hand_translations[j][0]).unsqueeze(0)
+            rep = torch.FloatTensor(hand_representation[j][0]).unsqueeze(0)
+
+            verts = MANO(rep, th_trans=trans)[0][0].cpu().data.numpy()/1000
 
             scene_hands_verts.append(verts)
             scene_hands_faces.append(mano_faces)
 
-        plot_scene_w_grasps(scene_obj_verts, scene_obj_faces, scene_hand_verts, scene_hand_faces, plane)
+        print("Press a key to visualize another scene:")
+        plot_scene_w_grasps(scene_obj_verts, scene_obj_faces, scene_hands_verts, scene_hands_faces, plane)
 
 
 if __name__ == '__main__':

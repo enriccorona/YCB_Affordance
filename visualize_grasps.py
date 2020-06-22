@@ -21,10 +21,12 @@ from utils import fast_load_obj, plot_hand_w_object
 def Visualize():
     grasps = glob.glob('data/grasps/obj_*')
     grasps.sort()
+    np.random.seed(1)
+    np.random.shuffle(grasps)
 
     from manopth.manolayer import ManoLayer
     mano_layer_right = ManoLayer(
-            mano_root='/home/ecorona/hand_grasppoint_gan/manopth/mano/models/', side='right', use_pca=True, ncomps=45, flat_hand_mean=True)
+            mano_root= 'data/mano/', side='right', use_pca=True, ncomps=45, flat_hand_mean=True)
 
     for i, grasp in tqdm.tqdm(enumerate(grasps)):
         with open(grasp, 'rb') as f:
